@@ -15,6 +15,9 @@ import {
   getFirstDayOfMonth,
   isToday,
   isSameDay,
+  parseDateLocal,
+  isExpired,
+  getTodayString,
 } from '../utils/dateUtils';
 import type { CalendarEvent } from '../types';
 
@@ -68,9 +71,19 @@ export default function MedicalCalendar() {
     }
   };
 
+  const todayStr = getTodayString();
+  const todayDate = parseDateLocal(todayStr);
+
   const upcomingEvents = calendarEvents
-    .filter((event) => new Date(event.date) >= new Date())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .filter((event) => {
+      const eventDate = parseDateLocal(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate.getTime() >= todayDate.getTime();
+    })
+    .sort(
+      (a, b) =>
+        parseDateLocal(a.date).getTime() - parseDateLocal(b.date).getTime()
+    )
     .slice(0, 5);
 
   const days: (number | null)[] = [];

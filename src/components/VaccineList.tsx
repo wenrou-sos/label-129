@@ -1,6 +1,6 @@
 import { Syringe, AlertTriangle, Calendar, Clock } from 'lucide-react';
 import { usePetStore } from '../store/usePetStore';
-import { isExpired, isUpcoming, formatDateCN, daysUntil } from '../utils/dateUtils';
+import { isExpired, isUpcoming, formatDateCN, daysUntil, parseDateLocal } from '../utils/dateUtils';
 
 interface VaccineListProps {
   limit?: number;
@@ -11,7 +11,7 @@ export function VaccineList({ limit = 3, showAll = false }: VaccineListProps) {
   const { vaccines } = usePetStore();
 
   const sortedVaccines = [...vaccines].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
   );
 
   const displayVaccines = showAll ? sortedVaccines : sortedVaccines.slice(0, limit);

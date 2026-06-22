@@ -16,6 +16,7 @@ import {
   mockVisitRecords,
   mockCalendarEvents,
 } from '../data/mockData';
+import { parseDateLocal } from '../utils/dateUtils';
 
 interface PetState {
   pet: Pet;
@@ -74,7 +75,7 @@ export const usePetStore = create<PetState>()(
         const reports = get().examReports;
         if (reports.length === 0) return undefined;
         return [...reports].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
         )[0];
       },
 
@@ -82,7 +83,7 @@ export const usePetStore = create<PetState>()(
         const reports = get().examReports;
         if (reports.length < 2) return undefined;
         return [...reports].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
         )[1];
       },
     }),

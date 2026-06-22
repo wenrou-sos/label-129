@@ -1,5 +1,6 @@
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Syringe, Bug, FileText, Clock, ChevronRight } from 'lucide-react';
+import { Syringe, Bug, FileText, Clock, ChevronRight, ChevronUp } from 'lucide-react';
 import { PetCard } from '../components/PetCard';
 import { FunctionGrid } from '../components/FunctionGrid';
 import { SectionCard } from '../components/SectionCard';
@@ -10,6 +11,27 @@ import { MedicalTimeline } from '../components/MedicalTimeline';
 
 export default function Home() {
   const navigate = useNavigate();
+  const [showAllVaccine, setShowAllVaccine] = useState(false);
+  const [showAllDeworm, setShowAllDeworm] = useState(false);
+  const [showAllVisit, setShowAllVisit] = useState(false);
+
+  const vaccineRef = useRef<HTMLDivElement>(null);
+  const dewormRef = useRef<HTMLDivElement>(null);
+  const examRef = useRef<HTMLDivElement>(null);
+  const visitRef = useRef<HTMLDivElement>(null);
+
+  const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const toggleSection = (
+    setter: React.Dispatch<React.SetStateAction<boolean>>,
+    currentValue: boolean,
+    ref: React.RefObject<HTMLDivElement>
+  ) => {
+    setter(!currentValue);
+    setTimeout(() => scrollToRef(ref), 100);
+  };
 
   return (
     <div className="min-h-screen bg-surface-50 pb-24">
@@ -20,62 +42,109 @@ export default function Home() {
 
         <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <FunctionGrid
-            onVaccineClick={() => {}}
-            onDewormClick={() => {}}
-            onExamClick={() => navigate('/compare')}
-            onVisitClick={() => {}}
+            onVaccineClick={() => scrollToRef(vaccineRef)}
+            onDewormClick={() => scrollToRef(dewormRef)}
+            onExamClick={() => scrollToRef(examRef)}
+            onVisitClick={() => scrollToRef(visitRef)}
           />
         </div>
 
-        <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+        <div ref={vaccineRef} className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
           <SectionCard
             title="疫苗本"
             icon={<Syringe className="w-5 h-5" />}
             extra={
-              <span className="flex items-center text-primary-500 text-xs">
-                查看全部 <ChevronRight className="w-4 h-4" />
-              </span>
+              <button
+                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                onClick={() => toggleSection(setShowAllVaccine, showAllVaccine, vaccineRef)}
+              >
+                {showAllVaccine ? (
+                  <>
+                    收起 <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    查看全部 <ChevronRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             }
+            onClick={() => toggleSection(setShowAllVaccine, showAllVaccine, vaccineRef)}
           >
-            <VaccineList limit={2} />
+            <VaccineList limit={2} showAll={showAllVaccine} />
           </SectionCard>
         </div>
 
-        <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
+        <div ref={dewormRef} className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
           <SectionCard
             title="驱虫记录"
             icon={<Bug className="w-5 h-5" />}
             extra={
-              <span className="flex items-center text-primary-500 text-xs">
-                查看全部 <ChevronRight className="w-4 h-4" />
-              </span>
+              <button
+                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                onClick={() => toggleSection(setShowAllDeworm, showAllDeworm, dewormRef)}
+              >
+                {showAllDeworm ? (
+                  <>
+                    收起 <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    查看全部 <ChevronRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             }
+            onClick={() => toggleSection(setShowAllDeworm, showAllDeworm, dewormRef)}
           >
-            <DewormTimeline limit={3} />
+            <DewormTimeline limit={3} showAll={showAllDeworm} />
           </SectionCard>
         </div>
 
-        <div className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
+        <div ref={examRef} className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
           <SectionCard
             title="体检报告"
             icon={<FileText className="w-5 h-5" />}
             onClick={() => navigate('/compare')}
+            extra={
+              <button
+                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/compare');
+                }}
+              >
+                对比分析 <ChevronRight className="w-4 h-4" />
+              </button>
+            }
           >
             <ExamReportCard compact />
           </SectionCard>
         </div>
 
-        <div className="animate-slide-up" style={{ animationDelay: '0.5s' }}>
+        <div ref={visitRef} className="animate-slide-up" style={{ animationDelay: '0.5s' }}>
           <SectionCard
             title="病历时间轴"
             icon={<Clock className="w-5 h-5" />}
             extra={
-              <span className="flex items-center text-primary-500 text-xs">
-                查看全部 <ChevronRight className="w-4 h-4" />
-              </span>
+              <button
+                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                onClick={() => toggleSection(setShowAllVisit, showAllVisit, visitRef)}
+              >
+                {showAllVisit ? (
+                  <>
+                    收起 <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    查看全部 <ChevronRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             }
+            onClick={() => toggleSection(setShowAllVisit, showAllVisit, visitRef)}
           >
-            <MedicalTimeline limit={2} />
+            <MedicalTimeline limit={2} showAll={showAllVisit} />
           </SectionCard>
         </div>
       </div>

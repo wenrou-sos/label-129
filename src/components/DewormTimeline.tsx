@@ -1,6 +1,6 @@
 import { Pill, Bug, Clock, ArrowRight } from 'lucide-react';
 import { usePetStore } from '../store/usePetStore';
-import { formatDateCN, daysUntil, isUpcoming } from '../utils/dateUtils';
+import { formatDateCN, daysUntil, isUpcoming, isExpired, parseDateLocal } from '../utils/dateUtils';
 
 interface DewormTimelineProps {
   limit?: number;
@@ -11,52 +11,103 @@ export function DewormTimeline({ limit = 4, showAll = false }: DewormTimelinePro
   const { deworms } = usePetStore();
 
   const sortedDeworms = [...deworms].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
   );
 
   const displayDeworms = showAll ? sortedDeworms : sortedDeworms.slice(0, limit);
 
-  const nextInternal = sortedDeworms
-    .filter((d) => d.type === 'internal')
-    .sort((a, b) => new Date(b.nextDate).getTime() - new Date(a.nextDate).getTime())[0];
+  const findNextDeworm = (type: 'internal' | 'external') => {
+    const typeRecords = sortedDeworms.filter((d) => d.type === type);
+    if (typeRecords.length === 0) return null;
 
-  const nextExternal = sortedDeworms
-    .filter((d) => d.type === 'external')
-    .sort((a, b) => new Date(b.nextDate).getTime() - new Date(a.nextDate).getTime())[0];
+    const upcoming = typeRecords
+      .filter((d) => !isExpired(d.nextDate))
+      .sort(
+        (a, b) => parseDateLocal(a.nextDate).getTime() - parseDateLocal(b.nextDate).getTime()
+      );
+
+    if (upcoming.length > 0) {
+      return upcoming[0];
+    }
+
+    const expired = typeRecords.sort(
+      (a, b) => parseDateLocal(b.nextDate).getTime() - parseDateLocal(a.nextDate).getTime()
+    );
+    return expired[0];
+  };
+
+  const nextInternal = findNextDeworm('internal');
+  const nextExternal = findNextDeworm('external');
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-2">
         {nextInternal && (
-          <div className="p-3 rounded-xl bg-primary-50 border border-primary-100">
-            <div className="flex items-center gap-1.5 text-primary-600 text-xs mb-1">
+          <div
+            className={`p-3 rounded-xl border ${
+              isExpired(nextInternal.nextDate)
+                ? 'bg-accent-50 border-accent-200'
+                : 'bg-primary-50 border-primary-100'
+            }`}
+          >
+            <div
+              className={`flex items-center gap-1.5 text-xs mb-1 ${
+                isExpired(nextInternal.nextDate) ? 'text-accent-600' : 'text-primary-600'
+              }`}
+            >
               <Pill className="w-3 h-3" />
               <span>下次体内驱虫</span>
             </div>
-            <p className="font-semibold text-surface-800 text-sm mb-0.5">
+            <p
+              className={`font-semibold text-sm mb-0.5 ${
+                isExpired(nextInternal.nextDate) ? 'text-accent-600' : 'text-surface-800'
+              }`}
+            >
               {formatDateCN(nextInternal.nextDate)}
             </p>
-            {isUpcoming(nextInternal.nextDate, 30) && (
+            {isExpired(nextInternal.nextDate) ? (
+              <p className="text-xs text-accent-500 font-medium">
+                已过期 {Math.abs(daysUntil(nextInternal.nextDate))} 天
+              </p>
+            ) : isUpcoming(nextInternal.nextDate, 30) ? (
               <p className="text-xs text-primary-500">
                 还有 {daysUntil(nextInternal.nextDate)} 天
               </p>
-            )}
+            ) : null}
           </div>
         )}
         {nextExternal && (
-          <div className="p-3 rounded-xl bg-accent-50 border border-accent-100">
-            <div className="flex items-center gap-1.5 text-accent-600 text-xs mb-1">
+          <div
+            className={`p-3 rounded-xl border ${
+              isExpired(nextExternal.nextDate)
+                ? 'bg-accent-50 border-accent-200'
+                : 'bg-accent-50 border-accent-100'
+            }`}
+          >
+            <div
+              className={`flex items-center gap-1.5 text-xs mb-1 ${
+                isExpired(nextExternal.nextDate) ? 'text-accent-600' : 'text-accent-600'
+              }`}
+            >
               <Bug className="w-3 h-3" />
               <span>下次体外驱虫</span>
             </div>
-            <p className="font-semibold text-surface-800 text-sm mb-0.5">
+            <p
+              className={`font-semibold text-sm mb-0.5 ${
+                isExpired(nextExternal.nextDate) ? 'text-accent-600' : 'text-surface-800'
+              }`}
+            >
               {formatDateCN(nextExternal.nextDate)}
             </p>
-            {isUpcoming(nextExternal.nextDate, 30) && (
+            {isExpired(nextExternal.nextDate) ? (
+              <p className="text-xs text-accent-500 font-medium">
+                已过期 {Math.abs(daysUntil(nextExternal.nextDate))} 天
+              </p>
+            ) : isUpcoming(nextExternal.nextDate, 30) ? (
               <p className="text-xs text-accent-500">
                 还有 {daysUntil(nextExternal.nextDate)} 天
               </p>
-            )}
+            ) : null}
           </div>
         )}
       </div>
@@ -64,7 +115,7 @@ export function DewormTimeline({ limit = 4, showAll = false }: DewormTimelinePro
       <div className="relative">
         <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-surface-200" />
         <div className="space-y-4">
-          {displayDeworms.map((deworm, index) => (
+          {displayDeworms.map((deworm) => (
             <div key={deworm.id} className="relative flex gap-3">
               <div
                 className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${

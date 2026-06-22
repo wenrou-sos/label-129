@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Clock, Stethoscope, ChevronRight, Calendar } from 'lucide-react';
 import { usePetStore } from '../store/usePetStore';
-import { formatDateCN } from '../utils/dateUtils';
+import { formatDateCN, parseDateLocal } from '../utils/dateUtils';
 
 interface MedicalTimelineProps {
   limit?: number;
@@ -13,7 +13,7 @@ export function MedicalTimeline({ limit = 3, showAll = false }: MedicalTimelineP
   const navigate = useNavigate();
 
   const sortedRecords = [...visitRecords].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
   );
 
   const displayRecords = showAll ? sortedRecords : sortedRecords.slice(0, limit);
