@@ -1,4 +1,4 @@
-import { Syringe, AlertTriangle, Calendar, Clock } from 'lucide-react';
+import { Syringe, AlertTriangle, Calendar, Clock, Plus } from 'lucide-react';
 import { usePetStore } from '../store/usePetStore';
 import { isExpired, isUpcoming, formatDateCN, daysUntil, parseDateLocal } from '../utils/dateUtils';
 
@@ -16,6 +16,15 @@ export function VaccineList({ limit = 3, showAll = false }: VaccineListProps) {
   );
 
   const displayVaccines = showAll ? sortedVaccines : sortedVaccines.slice(0, limit);
+
+  if (sortedVaccines.length === 0) {
+    return (
+      <div className="text-center py-6 text-surface-400">
+        <Syringe className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p className="text-sm">暂无疫苗记录</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">

@@ -230,7 +230,8 @@ export const usePetStore = create<PetState>()(
       },
 
       getVisitRecordById: (id) => {
-        return get().visitRecords.find((r) => r.id === id);
+        const petId = get().currentPetId;
+        return get().visitRecords.find((r) => r.id === id && r.petId === petId);
       },
 
       currentCalendarEvents: () => {

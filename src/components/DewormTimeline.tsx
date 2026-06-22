@@ -17,6 +17,15 @@ export function DewormTimeline({ limit = 4, showAll = false }: DewormTimelinePro
 
   const displayDeworms = showAll ? sortedDeworms : sortedDeworms.slice(0, limit);
 
+  if (sortedDeworms.length === 0) {
+    return (
+      <div className="text-center py-6 text-surface-400">
+        <Bug className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p className="text-sm">暂无驱虫记录</p>
+      </div>
+    );
+  }
+
   const findNextDeworm = (type: 'internal' | 'external') => {
     const typeRecords = sortedDeworms.filter((d) => d.type === type);
     if (typeRecords.length === 0) return null;

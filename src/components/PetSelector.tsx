@@ -105,7 +105,7 @@ export function PetSelector({ onAddPet, onEditPet, onDeletePet }: PetSelectorPro
                     {pet.breed} · {pet.age}岁 · {pet.gender === 'male' ? '♂' : '♀'}
                   </div>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

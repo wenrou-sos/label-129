@@ -19,6 +19,15 @@ export function MedicalTimeline({ limit = 3, showAll = false }: MedicalTimelineP
 
   const displayRecords = showAll ? sortedRecords : sortedRecords.slice(0, limit);
 
+  if (sortedRecords.length === 0) {
+    return (
+      <div className="text-center py-6 text-surface-400">
+        <Stethoscope className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p className="text-sm">暂无就诊记录</p>
+      </div>
+    );
+  }
+
   const handleClick = (id: string) => {
     navigate(`/visit/${id}`);
   };
