@@ -9,6 +9,8 @@ import {
   ChevronUp,
   Plus,
   Settings,
+  Search,
+  X,
 } from 'lucide-react';
 import { PetCard } from '../components/PetCard';
 import { FunctionGrid } from '../components/FunctionGrid';
@@ -23,6 +25,7 @@ import { Modal } from '../components/Modal';
 import { AddVaccineForm } from '../components/AddVaccineForm';
 import { AddDewormForm } from '../components/AddDewormForm';
 import { AddVisitForm } from '../components/AddVisitForm';
+import { SearchResultList } from '../components/SearchResultList';
 import { usePetStore } from '../store/usePetStore';
 import type { Pet } from '../types';
 
@@ -38,6 +41,8 @@ export default function Home() {
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [showPetModal, setShowPetModal] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | undefined>(undefined);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const vaccineRef = useRef<HTMLDivElement>(null);
   const dewormRef = useRef<HTMLDivElement>(null);
@@ -110,6 +115,37 @@ export default function Home() {
           <PetCard />
         </div>
 
+        <div className="animate-slide-up" style={{ animationDelay: '0.05s' }}>
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              placeholder="搜索疫苗、驱虫、就诊、体检..."
+              className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white shadow-sm border border-surface-100 text-sm text-surface-700 placeholder-surface-400 focus:outline-none focus:border-primary-300 focus:ring-2 focus:ring-primary-100 transition-all"
+            />
+            {searchKeyword && (
+              <button
+                onClick={() => {
+                  setSearchKeyword('');
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-surface-200 flex items-center justify-center hover:bg-surface-300 transition-colors"
+              >
+                <X className="w-3.5 h-3.5 text-surface-500" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {searchKeyword.trim() ? (
+          <div className="animate-fade-in">
+            <SearchResultList keyword={searchKeyword} />
+          </div>
+        ) : (
+          <>
         <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <FunctionGrid
             onVaccineClick={() => scrollToRef(vaccineRef)}
@@ -244,6 +280,8 @@ export default function Home() {
             <MedicalTimeline limit={2} showAll={showAllVisit} />
           </SectionCard>
         </div>
+          </>
+        )}
       </div>
 
       <Modal

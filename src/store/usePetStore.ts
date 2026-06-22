@@ -19,6 +19,17 @@ import {
 import { parseDateLocal } from '../utils/dateUtils';
 import { generateId } from '../utils/id';
 
+export type SearchResultType = 'vaccine' | 'deworm' | 'visit';
+
+export interface SearchResult {
+  id: string;
+  type: SearchResultType;
+  date: string;
+  title: string;
+  subtitle: string;
+  matchedFields: string[];
+}
+
 interface PetState {
   pets: Pet[];
   currentPetId: string;
@@ -53,6 +64,8 @@ interface PetState {
 
   getLatestExamReport: () => ExamReport | undefined;
   getPreviousExamReport: () => ExamReport | undefined;
+
+  searchRecords: (keyword: string) => SearchResult[];
 
   resetAllData: () => void;
 }
@@ -273,6 +286,73 @@ export const usePetStore = create<PetState>()(
           (a, b) =>
             parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
         )[1];
+      },
+
+      searchRecords: (keyword) => {
+        if (!keyword.trim()) return [];
+
+        const lowerKeyword = keyword.toLowerCase().trim();
+        const petId = get().currentPetId;
+        const results: SearchResult[] = [];
+
+        const vaccines = get().vaccines.filter((v) => v.petId === petId);
+        vaccines.forEach((vaccine) => {
+          const matchedFields: string[] = [];
+          if (vaccine.name.toLowerCase().includes(lowerKeyword)) matchedFields.push('疫苗名称');
+          if (vaccine.hospital.toLowerCase().includes(lowerKeyword)) matchedFields.push('医院');
+          if (matchedFields.length > 0) {
+            results.push({
+              id: vaccine.id,
+              type: 'vaccine',
+              date: vaccine.date,
+              title: vaccine.name,
+              subtitle: `${vaccine.hospital}`,
+              matchedFields,
+            });
+          }
+        });
+
+        const deworms = get().deworms.filter((d) => d.petId === petId);
+        deworms.forEach((deworm) => {
+          const matchedFields: string[] = [];
+          const typeLabel = deworm.type === 'internal' ? '体内驱虫' : '体外驱虫';
+          if (typeLabel.toLowerCase().includes(lowerKeyword)) matchedFields.push('驱虫类型');
+          if (deworm.medicine.toLowerCase().includes(lowerKeyword)) matchedFields.push('药物');
+          if (matchedFields.length > 0) {
+            results.push({
+              id: deworm.id,
+              type: 'deworm',
+              date: deworm.date,
+              title: typeLabel,
+              subtitle: `药物：${deworm.medicine}`,
+              matchedFields,
+            });
+          }
+        });
+
+        const visits = get().visitRecords.filter((v) => v.petId === petId);
+        visits.forEach((visit) => {
+          const matchedFields: string[] = [];
+          if (visit.chiefComplaint.toLowerCase().includes(lowerKeyword)) matchedFields.push('主诉');
+          if (visit.diagnosis.toLowerCase().includes(lowerKeyword)) matchedFields.push('诊断结论');
+          if (visit.hospital.toLowerCase().includes(lowerKeyword)) matchedFields.push('医院');
+          if (visit.doctor.toLowerCase().includes(lowerKeyword)) matchedFields.push('医生');
+          if (visit.examItems.some((item) => item.toLowerCase().includes(lowerKeyword))) matchedFields.push('检查项目');
+          if (visit.medications.some((med) => med.name.toLowerCase().includes(lowerKeyword))) matchedFields.push('药物');
+          if (matchedFields.length > 0) {
+            results.push({
+              id: visit.id,
+              type: 'visit',
+              date: visit.date,
+              title: visit.diagnosis,
+              subtitle: `${visit.hospital} · ${visit.doctor}`,
+              matchedFields,
+            });
+          }
+        });
+
+        results.sort((a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime());
+        return results;
       },
 
       resetAllData: () => {
