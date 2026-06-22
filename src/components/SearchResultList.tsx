@@ -4,7 +4,6 @@ import {
   Syringe,
   Bug,
   Stethoscope,
-  FileText,
   Calendar,
   ChevronRight,
 } from 'lucide-react';
@@ -17,7 +16,7 @@ interface SearchResultListProps {
 
 type SearchResultItem = {
   id: string;
-  type: 'vaccine' | 'deworm' | 'visit' | 'exam';
+  type: 'vaccine' | 'deworm' | 'visit';
   date: string;
   title: string;
   subtitle: string;
@@ -27,13 +26,11 @@ type SearchResultItem = {
 
 export function SearchResultList({ keyword }: SearchResultListProps) {
   const navigate = useNavigate();
-  const { currentVaccines, currentDeworms, currentVisitRecords, currentExamReports } =
-    usePetStore();
+  const { currentVaccines, currentDeworms, currentVisitRecords } = usePetStore();
 
   const vaccines = currentVaccines();
   const deworms = currentDeworms();
   const visitRecords = currentVisitRecords();
-  const examReports = currentExamReports();
 
   const lowerKeyword = keyword.trim().toLowerCase();
 
@@ -64,15 +61,23 @@ export function SearchResultList({ keyword }: SearchResultListProps) {
   });
 
   deworms.forEach((d) => {
-    if (d.medicine.toLowerCase().includes(lowerKeyword)) {
-      results.push({
-        id: `deworm-${d.id}`,
-        type: 'deworm',
-        date: d.date,
-        title: d.type === 'internal' ? '体内驱虫' : '体外驱虫',
-        subtitle: `药物：${d.medicine}`,
-        matchedField: '驱虫药物',
-      });
+    const typeLabel = d.type === 'internal' ? '体内驱虫' : '体外驱虫';
+    const fields = {
+      medicine: d.medicine,
+      type: typeLabel,
+    };
+    for (const [key, value] of Object.entries(fields)) {
+      if (value.toLowerCase().includes(lowerKeyword)) {
+        results.push({
+          id: `deworm-${d.id}`,
+          type: 'deworm',
+          date: d.date,
+          title: typeLabel,
+          subtitle: `药物：${d.medicine}`,
+          matchedField: key === 'medicine' ? '驱虫药物' : '驱虫类型',
+        });
+        break;
+      }
     }
   });
 
@@ -106,26 +111,6 @@ export function SearchResultList({ keyword }: SearchResultListProps) {
     }
   });
 
-  examReports.forEach((e) => {
-    const fields = {
-      hospital: e.hospital,
-      abnormalItems: e.abnormalItems.join(','),
-    };
-    for (const [key, value] of Object.entries(fields)) {
-      if (value.toLowerCase().includes(lowerKeyword)) {
-        results.push({
-          id: `exam-${e.id}`,
-          type: 'exam',
-          date: e.date,
-          title: '体检报告',
-          subtitle: `${e.hospital} · ${e.weight}kg`,
-          matchedField: key === 'hospital' ? '体检医院' : '异常项目',
-        });
-        break;
-      }
-    }
-  });
-
   results.sort(
     (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
   );
@@ -138,8 +123,6 @@ export function SearchResultList({ keyword }: SearchResultListProps) {
         return <Bug className="w-4 h-4" />;
       case 'visit':
         return <Stethoscope className="w-4 h-4" />;
-      case 'exam':
-        return <FileText className="w-4 h-4" />;
       default:
         return <Search className="w-4 h-4" />;
     }
@@ -153,8 +136,6 @@ export function SearchResultList({ keyword }: SearchResultListProps) {
         return 'bg-accent-100 text-accent-500';
       case 'visit':
         return 'bg-purple-100 text-purple-500';
-      case 'exam':
-        return 'bg-warning-100 text-warning-500';
       default:
         return 'bg-surface-100 text-surface-500';
     }
@@ -168,8 +149,6 @@ export function SearchResultList({ keyword }: SearchResultListProps) {
         return '驱虫';
       case 'visit':
         return '就诊';
-      case 'exam':
-        return '体检';
       default:
         return '';
     }

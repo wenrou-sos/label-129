@@ -123,7 +123,7 @@ export default function Home() {
               type="text"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              placeholder="搜索疫苗、驱虫、就诊、体检..."
+              placeholder="搜索疫苗、驱虫、就诊..."
               className="w-full h-11 pl-10 pr-10 rounded-2xl bg-white shadow-sm border border-surface-100 text-sm text-surface-700 placeholder-surface-400 focus:outline-none focus:border-primary-300 focus:ring-2 focus:ring-primary-100 transition-all"
             />
             {searchKeyword && (
