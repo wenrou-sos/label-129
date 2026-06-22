@@ -16,7 +16,8 @@ import {
   mockVisitRecords,
   mockCalendarEvents,
 } from '../data/mockData';
-import { parseDateLocal } from '../utils/dateUtils';
+import { parseDateLocal, formatDateCN } from '../utils/dateUtils';
+import { generateId } from '../utils/id';
 
 interface PetState {
   pet: Pet;
@@ -26,10 +27,12 @@ interface PetState {
   visitRecords: VisitRecord[];
   calendarEvents: CalendarEvent[];
   setPet: (pet: Pet) => void;
-  addVaccine: (vaccine: Vaccine) => void;
-  addDeworm: (deworm: Deworm) => void;
-  addExamReport: (report: ExamReport) => void;
-  addVisitRecord: (record: VisitRecord) => void;
+  addVaccine: (vaccine: Omit<Vaccine, 'id'>) => void;
+  addDeworm: (deworm: Omit<Deworm, 'id'>) => void;
+  addExamReport: (report: Omit<ExamReport, 'id'>) => void;
+  addVisitRecord: (record: Omit<VisitRecord, 'id'>) => void;
+  addCalendarEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+  removeCalendarEvent: (id: string) => void;
   getVisitRecordById: (id: string) => VisitRecord | undefined;
   getLatestExamReport: () => ExamReport | undefined;
   getPreviousExamReport: () => ExamReport | undefined;
@@ -47,25 +50,103 @@ export const usePetStore = create<PetState>()(
 
       setPet: (pet) => set({ pet }),
 
-      addVaccine: (vaccine) =>
-        set((state) => ({
-          vaccines: [vaccine, ...state.vaccines],
-        })),
+      addVaccine: (vaccine) => {
+        const newVaccine: Vaccine = {
+          ...vaccine,
+          id: generateId('vaccine'),
+        };
 
-      addDeworm: (deworm) =>
-        set((state) => ({
-          deworms: [deworm, ...state.deworms],
-        })),
+        const newEvent: CalendarEvent = {
+          id: generateId('event'),
+          date: vaccine.nextDate,
+          type: 'vaccine',
+          title: `${vaccine.name}接种`,
+          description: `下次${vaccine.name}疫苗接种，${vaccine.hospital}`,
+        };
 
-      addExamReport: (report) =>
         set((state) => ({
-          examReports: [report, ...state.examReports],
-        })),
+          vaccines: [newVaccine, ...state.vaccines],
+          calendarEvents: [...state.calendarEvents, newEvent],
+        }));
+      },
 
-      addVisitRecord: (record) =>
+      addDeworm: (deworm) => {
+        const newDeworm: Deworm = {
+          ...deworm,
+          id: generateId('deworm'),
+        };
+
+        const newEvent: CalendarEvent = {
+          id: generateId('event'),
+          date: deworm.nextDate,
+          type: 'deworm',
+          title: `${deworm.type === 'internal' ? '体内' : '体外'}驱虫`,
+          description: `下次${deworm.type === 'internal' ? '体内' : '体外'}驱虫，使用${deworm.medicine}`,
+        };
+
         set((state) => ({
-          visitRecords: [record, ...state.visitRecords],
-        })),
+          deworms: [newDeworm, ...state.deworms],
+          calendarEvents: [...state.calendarEvents, newEvent],
+        }));
+      },
+
+      addExamReport: (report) => {
+        const newReport: ExamReport = {
+          ...report,
+          id: generateId('exam'),
+        };
+        set((state) => ({
+          examReports: [newReport, ...state.examReports],
+        }));
+      },
+
+      addVisitRecord: (record) => {
+        const newRecord: VisitRecord = {
+          ...record,
+          id: generateId('visit'),
+        };
+
+        let newEvents: CalendarEvent[] = [];
+
+        if (record.treatmentAdvice) {
+          const lines = record.treatmentAdvice.split('\n');
+          lines.forEach((line) => {
+            if (line.includes('复诊') || line.includes('复查')) {
+              const today = new Date();
+              today.setDate(today.getDate() + 7);
+              const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+              newEvents.push({
+                id: generateId('event'),
+                date: dateStr,
+                type: 'recheck',
+                title: '复诊检查',
+                description: `${record.hospital}复诊，${record.doctor}医生`,
+              });
+            }
+          });
+        }
+
+        set((state) => ({
+          visitRecords: [newRecord, ...state.visitRecords],
+          calendarEvents: [...state.calendarEvents, ...newEvents],
+        }));
+      },
+
+      addCalendarEvent: (event) => {
+        const newEvent: CalendarEvent = {
+          ...event,
+          id: generateId('event'),
+        };
+        set((state) => ({
+          calendarEvents: [...state.calendarEvents, newEvent],
+        }));
+      },
+
+      removeCalendarEvent: (id) => {
+        set((state) => ({
+          calendarEvents: state.calendarEvents.filter((e) => e.id !== id),
+        }));
+      },
 
       getVisitRecordById: (id) => {
         return get().visitRecords.find((r) => r.id === id);

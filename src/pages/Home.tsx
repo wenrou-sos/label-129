@@ -1,6 +1,14 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Syringe, Bug, FileText, Clock, ChevronRight, ChevronUp } from 'lucide-react';
+import {
+  Syringe,
+  Bug,
+  FileText,
+  Clock,
+  ChevronRight,
+  ChevronUp,
+  Plus,
+} from 'lucide-react';
 import { PetCard } from '../components/PetCard';
 import { FunctionGrid } from '../components/FunctionGrid';
 import { SectionCard } from '../components/SectionCard';
@@ -8,12 +16,20 @@ import { VaccineList } from '../components/VaccineList';
 import { DewormTimeline } from '../components/DewormTimeline';
 import { ExamReportCard } from '../components/ExamReportCard';
 import { MedicalTimeline } from '../components/MedicalTimeline';
+import { Modal } from '../components/Modal';
+import { AddVaccineForm } from '../components/AddVaccineForm';
+import { AddDewormForm } from '../components/AddDewormForm';
+import { AddVisitForm } from '../components/AddVisitForm';
 
 export default function Home() {
   const navigate = useNavigate();
   const [showAllVaccine, setShowAllVaccine] = useState(false);
   const [showAllDeworm, setShowAllDeworm] = useState(false);
   const [showAllVisit, setShowAllVisit] = useState(false);
+
+  const [showVaccineModal, setShowVaccineModal] = useState(false);
+  const [showDewormModal, setShowDewormModal] = useState(false);
+  const [showVisitModal, setShowVisitModal] = useState(false);
 
   const vaccineRef = useRef<HTMLDivElement>(null);
   const dewormRef = useRef<HTMLDivElement>(null);
@@ -31,6 +47,16 @@ export default function Home() {
   ) => {
     setter(!currentValue);
     setTimeout(() => scrollToRef(ref), 100);
+  };
+
+  const handleAddSuccess = () => {
+    setShowAllVaccine(true);
+    setShowAllDeworm(true);
+    setShowAllVisit(true);
+  };
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -54,20 +80,29 @@ export default function Home() {
             title="疫苗本"
             icon={<Syringe className="w-5 h-5" />}
             extra={
-              <button
-                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
-                onClick={() => toggleSection(setShowAllVaccine, showAllVaccine, vaccineRef)}
-              >
-                {showAllVaccine ? (
-                  <>
-                    收起 <ChevronUp className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    查看全部 <ChevronRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2" onClick={stopPropagation}>
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-primary-50 text-primary-600 text-xs font-medium hover:bg-primary-100 transition-colors"
+                  onClick={() => setShowVaccineModal(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  添加记录
+                </button>
+                <button
+                  className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                  onClick={() => toggleSection(setShowAllVaccine, showAllVaccine, vaccineRef)}
+                >
+                  {showAllVaccine ? (
+                    <>
+                      收起 <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      查看全部 <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </div>
             }
             onClick={() => toggleSection(setShowAllVaccine, showAllVaccine, vaccineRef)}
           >
@@ -80,20 +115,29 @@ export default function Home() {
             title="驱虫记录"
             icon={<Bug className="w-5 h-5" />}
             extra={
-              <button
-                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
-                onClick={() => toggleSection(setShowAllDeworm, showAllDeworm, dewormRef)}
-              >
-                {showAllDeworm ? (
-                  <>
-                    收起 <ChevronUp className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    查看全部 <ChevronRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2" onClick={stopPropagation}>
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-accent-50 text-accent-600 text-xs font-medium hover:bg-accent-100 transition-colors"
+                  onClick={() => setShowDewormModal(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  添加记录
+                </button>
+                <button
+                  className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                  onClick={() => toggleSection(setShowAllDeworm, showAllDeworm, dewormRef)}
+                >
+                  {showAllDeworm ? (
+                    <>
+                      收起 <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      查看全部 <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </div>
             }
             onClick={() => toggleSection(setShowAllDeworm, showAllDeworm, dewormRef)}
           >
@@ -127,20 +171,29 @@ export default function Home() {
             title="病历时间轴"
             icon={<Clock className="w-5 h-5" />}
             extra={
-              <button
-                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
-                onClick={() => toggleSection(setShowAllVisit, showAllVisit, visitRef)}
-              >
-                {showAllVisit ? (
-                  <>
-                    收起 <ChevronUp className="w-4 h-4" />
-                  </>
-                ) : (
-                  <>
-                    查看全部 <ChevronRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2" onClick={stopPropagation}>
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-purple-50 text-purple-600 text-xs font-medium hover:bg-purple-100 transition-colors"
+                  onClick={() => setShowVisitModal(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  添加记录
+                </button>
+                <button
+                  className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                  onClick={() => toggleSection(setShowAllVisit, showAllVisit, visitRef)}
+                >
+                  {showAllVisit ? (
+                    <>
+                      收起 <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      查看全部 <ChevronRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </div>
             }
             onClick={() => toggleSection(setShowAllVisit, showAllVisit, visitRef)}
           >
@@ -148,6 +201,39 @@ export default function Home() {
           </SectionCard>
         </div>
       </div>
+
+      <Modal
+        isOpen={showVaccineModal}
+        onClose={() => setShowVaccineModal(false)}
+        title="添加疫苗记录"
+      >
+        <AddVaccineForm
+          onClose={() => setShowVaccineModal(false)}
+          onSuccess={handleAddSuccess}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showDewormModal}
+        onClose={() => setShowDewormModal(false)}
+        title="添加驱虫记录"
+      >
+        <AddDewormForm
+          onClose={() => setShowDewormModal(false)}
+          onSuccess={handleAddSuccess}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showVisitModal}
+        onClose={() => setShowVisitModal(false)}
+        title="添加就诊记录"
+      >
+        <AddVisitForm
+          onClose={() => setShowVisitModal(false)}
+          onSuccess={handleAddSuccess}
+        />
+      </Modal>
     </div>
   );
 }
