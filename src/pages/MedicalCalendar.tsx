@@ -22,7 +22,9 @@ import {
 import type { CalendarEvent } from '../types';
 
 export default function MedicalCalendar() {
-  const { calendarEvents } = usePetStore();
+  const { currentCalendarEvents, currentPet } = usePetStore();
+  const calendarEvents = currentCalendarEvents();
+  const pet = currentPet();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const year = currentDate.getFullYear();

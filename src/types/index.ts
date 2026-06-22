@@ -11,6 +11,7 @@ export interface Pet {
 
 export interface Vaccine {
   id: string;
+  petId: string;
   name: string;
   date: string;
   nextDate: string;
@@ -19,6 +20,7 @@ export interface Vaccine {
 
 export interface Deworm {
   id: string;
+  petId: string;
   type: 'internal' | 'external';
   date: string;
   nextDate: string;
@@ -45,6 +47,7 @@ export interface BiochemTest {
 
 export interface ExamReport {
   id: string;
+  petId: string;
   date: string;
   hospital: string;
   weight: number;
@@ -63,6 +66,7 @@ export interface Medication {
 
 export interface VisitRecord {
   id: string;
+  petId: string;
   date: string;
   hospital: string;
   doctor: string;
@@ -75,6 +79,7 @@ export interface VisitRecord {
 
 export interface CalendarEvent {
   id: string;
+  petId: string;
   date: string;
   type: 'vaccine' | 'deworm' | 'recheck' | 'visit';
   title: string;

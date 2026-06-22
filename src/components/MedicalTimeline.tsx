@@ -9,7 +9,8 @@ interface MedicalTimelineProps {
 }
 
 export function MedicalTimeline({ limit = 3, showAll = false }: MedicalTimelineProps) {
-  const { visitRecords } = usePetStore();
+  const { currentVisitRecords } = usePetStore();
+  const visitRecords = currentVisitRecords();
   const navigate = useNavigate();
 
   const sortedRecords = [...visitRecords].sort(

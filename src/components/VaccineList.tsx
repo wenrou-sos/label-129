@@ -8,7 +8,8 @@ interface VaccineListProps {
 }
 
 export function VaccineList({ limit = 3, showAll = false }: VaccineListProps) {
-  const { vaccines } = usePetStore();
+  const { currentVaccines } = usePetStore();
+  const vaccines = currentVaccines();
 
   const sortedVaccines = [...vaccines].sort(
     (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()

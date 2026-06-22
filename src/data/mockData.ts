@@ -7,89 +7,51 @@ import type {
   CalendarEvent,
 } from '../types';
 
-export const mockPet: Pet = {
-  id: '1',
-  name: '豆豆',
-  breed: '金毛犬',
-  age: 3,
-  gender: 'male',
-  avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20golden%20retriever%20dog%20portrait%20white%20background%20professional%20pet%20photography&image_size=square',
-  weight: 28.5,
-  birthday: '2022-03-15',
-};
-
-export const mockVaccines: Vaccine[] = [
+export const mockPets: Pet[] = [
   {
-    id: 'v1',
-    name: '狂犬疫苗',
-    date: '2026-05-10',
-    nextDate: '2027-05-10',
-    hospital: '爱宠动物医院',
+    id: 'pet1',
+    name: '豆豆',
+    breed: '金毛犬',
+    age: 3,
+    gender: 'male',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20golden%20retriever%20dog%20portrait%20white%20background%20professional%20pet%20photography&image_size=square',
+    weight: 28.5,
+    birthday: '2022-03-15',
   },
   {
-    id: 'v2',
-    name: '六联疫苗',
-    date: '2026-05-10',
-    nextDate: '2027-05-10',
-    hospital: '爱宠动物医院',
-  },
-  {
-    id: 'v3',
-    name: '犬瘟热疫苗',
-    date: '2025-05-15',
-    nextDate: '2026-05-15',
-    hospital: '爱宠动物医院',
-  },
-  {
-    id: 'v4',
-    name: '细小病毒疫苗',
-    date: '2025-05-15',
-    nextDate: '2026-05-15',
-    hospital: '爱宠动物医院',
+    id: 'pet2',
+    name: '咪咪',
+    breed: '英国短毛猫',
+    age: 2,
+    gender: 'female',
+    avatar: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20british%20shorthair%20cat%20blue%20gray%20portrait%20white%20background%20professional%20pet%20photography&image_size=square',
+    weight: 4.2,
+    birthday: '2023-01-20',
   },
 ];
 
+export const mockVaccines: Vaccine[] = [
+  { id: 'v1', petId: 'pet1', name: '狂犬疫苗', date: '2026-05-10', nextDate: '2027-05-10', hospital: '爱宠动物医院' },
+  { id: 'v2', petId: 'pet1', name: '六联疫苗', date: '2026-05-10', nextDate: '2027-05-10', hospital: '爱宠动物医院' },
+  { id: 'v3', petId: 'pet1', name: '犬瘟热疫苗', date: '2025-05-15', nextDate: '2026-05-15', hospital: '爱宠动物医院' },
+  { id: 'v4', petId: 'pet1', name: '细小病毒疫苗', date: '2025-05-15', nextDate: '2026-05-15', hospital: '爱宠动物医院' },
+  { id: 'v5', petId: 'pet2', name: '狂犬疫苗', date: '2026-04-01', nextDate: '2027-04-01', hospital: '爱宠动物医院' },
+  { id: 'v6', petId: 'pet2', name: '猫三联疫苗', date: '2026-04-01', nextDate: '2027-04-01', hospital: '爱宠动物医院' },
+];
+
 export const mockDeworms: Deworm[] = [
-  {
-    id: 'd1',
-    type: 'internal',
-    date: '2026-06-01',
-    nextDate: '2026-09-01',
-    medicine: '拜宠清',
-  },
-  {
-    id: 'd2',
-    type: 'external',
-    date: '2026-06-10',
-    nextDate: '2026-07-10',
-    medicine: '福来恩',
-  },
-  {
-    id: 'd3',
-    type: 'internal',
-    date: '2026-03-01',
-    nextDate: '2026-06-01',
-    medicine: '拜宠清',
-  },
-  {
-    id: 'd4',
-    type: 'external',
-    date: '2026-05-10',
-    nextDate: '2026-06-10',
-    medicine: '福来恩',
-  },
-  {
-    id: 'd5',
-    type: 'internal',
-    date: '2025-12-01',
-    nextDate: '2026-03-01',
-    medicine: '拜宠清',
-  },
+  { id: 'd1', petId: 'pet1', type: 'internal', date: '2026-06-01', nextDate: '2026-09-01', medicine: '拜宠清' },
+  { id: 'd2', petId: 'pet1', type: 'external', date: '2026-06-10', nextDate: '2026-07-10', medicine: '福来恩' },
+  { id: 'd3', petId: 'pet1', type: 'internal', date: '2026-03-01', nextDate: '2026-06-01', medicine: '拜宠清' },
+  { id: 'd4', petId: 'pet1', type: 'external', date: '2026-05-10', nextDate: '2026-06-10', medicine: '福来恩' },
+  { id: 'd5', petId: 'pet2', type: 'internal', date: '2026-05-15', nextDate: '2026-08-15', medicine: '拜宠清' },
+  { id: 'd6', petId: 'pet2', type: 'external', date: '2026-06-01', nextDate: '2026-07-01', medicine: '大宠爱' },
 ];
 
 export const mockExamReports: ExamReport[] = [
   {
     id: 'e1',
+    petId: 'pet1',
     date: '2026-06-15',
     hospital: '爱宠动物医院',
     weight: 28.5,
@@ -112,6 +74,7 @@ export const mockExamReports: ExamReport[] = [
   },
   {
     id: 'e2',
+    petId: 'pet1',
     date: '2025-12-10',
     hospital: '爱宠动物医院',
     weight: 27.2,
@@ -132,11 +95,35 @@ export const mockExamReports: ExamReport[] = [
       { id: 'bc6', name: '肌酐', value: 75, unit: 'μmol/L', reference: '44-133', status: 'normal' },
     ],
   },
+  {
+    id: 'e3',
+    petId: 'pet2',
+    date: '2026-05-20',
+    hospital: '爱宠动物医院',
+    weight: 4.2,
+    abnormalItems: [],
+    bloodTests: [
+      { id: 'b1', name: '白细胞计数', value: 10.2, unit: '10^9/L', reference: '5.5-19.5', status: 'normal' },
+      { id: 'b2', name: '红细胞计数', value: 8.5, unit: '10^12/L', reference: '5.0-10.0', status: 'normal' },
+      { id: 'b3', name: '血红蛋白', value: 135, unit: 'g/L', reference: '80-150', status: 'normal' },
+      { id: 'b4', name: '血小板计数', value: 280, unit: '10^9/L', reference: '100-500', status: 'normal' },
+      { id: 'b5', name: '淋巴细胞比率', value: 35, unit: '%', reference: '15-70', status: 'normal' },
+    ],
+    biochemTests: [
+      { id: 'bc1', name: '谷丙转氨酶(ALT)', value: 38, unit: 'U/L', reference: '10-80', status: 'normal' },
+      { id: 'bc2', name: '谷草转氨酶(AST)', value: 32, unit: 'U/L', reference: '10-60', status: 'normal' },
+      { id: 'bc3', name: '总胆固醇', value: 4.5, unit: 'mmol/L', reference: '2.5-6.0', status: 'normal' },
+      { id: 'bc4', name: '血糖', value: 5.3, unit: 'mmol/L', reference: '3.5-7.5', status: 'normal' },
+      { id: 'bc5', name: '尿素氮', value: 6.2, unit: 'mmol/L', reference: '3.5-10.5', status: 'normal' },
+      { id: 'bc6', name: '肌酐', value: 85, unit: 'μmol/L', reference: '30-140', status: 'normal' },
+    ],
+  },
 ];
 
 export const mockVisitRecords: VisitRecord[] = [
   {
     id: 'visit1',
+    petId: 'pet1',
     date: '2026-06-18',
     hospital: '爱宠动物医院',
     doctor: '李医生',
@@ -151,6 +138,7 @@ export const mockVisitRecords: VisitRecord[] = [
   },
   {
     id: 'visit2',
+    petId: 'pet1',
     date: '2026-05-22',
     hospital: '爱宠动物医院',
     doctor: '王医生',
@@ -165,6 +153,7 @@ export const mockVisitRecords: VisitRecord[] = [
   },
   {
     id: 'visit3',
+    petId: 'pet1',
     date: '2026-01-10',
     hospital: '爱宠动物医院',
     doctor: '李医生',
@@ -174,63 +163,35 @@ export const mockVisitRecords: VisitRecord[] = [
     medications: [],
     treatmentAdvice: '1. 保持规律饮食和运动\n2. 定期进行体检\n3. 按时接种疫苗和驱虫',
   },
+  {
+    id: 'visit4',
+    petId: 'pet2',
+    date: '2026-06-10',
+    hospital: '爱宠动物医院',
+    doctor: '张医生',
+    chiefComplaint: '打喷嚏，流清鼻涕，食欲正常',
+    examItems: ['体温测量', '血常规'],
+    diagnosis: '轻微上呼吸道感染，猫鼻支初期',
+    medications: [
+      { id: 'm5', name: '赖氨酸', dosage: '1勺/次', frequency: '每日2次', duration: '14天' },
+      { id: 'm6', name: '阿莫西林', dosage: '1/4片/次', frequency: '每日2次', duration: '7天' },
+    ],
+    treatmentAdvice: '1. 注意保暖，避免吹空调\n2. 保证环境清洁通风\n3. 观察眼睛分泌物情况\n4. 1周后复诊',
+  },
 ];
 
 export const mockCalendarEvents: CalendarEvent[] = [
-  {
-    id: 'cal1',
-    date: '2026-06-22',
-    type: 'visit',
-    title: '就诊：轻微肠胃炎',
-    description: '爱宠动物医院，李医生',
-  },
-  {
-    id: 'cal2',
-    date: '2026-07-10',
-    type: 'deworm',
-    title: '体外驱虫',
-    description: '福来恩体外驱虫',
-  },
-  {
-    id: 'cal3',
-    date: '2026-07-10',
-    type: 'recheck',
-    title: '耳道炎复查',
-    description: '皮肤过敏情况复查，王医生',
-  },
-  {
-    id: 'cal4',
-    date: '2026-08-15',
-    type: 'recheck',
-    title: '肠胃炎复诊',
-    description: '李医生复诊，确认恢复情况',
-  },
-  {
-    id: 'cal5',
-    date: '2026-09-01',
-    type: 'deworm',
-    title: '体内驱虫',
-    description: '拜宠清体内驱虫',
-  },
-  {
-    id: 'cal6',
-    date: '2026-05-10',
-    type: 'vaccine',
-    title: '年度疫苗接种',
-    description: '狂犬疫苗+六联疫苗',
-  },
-  {
-    id: 'cal7',
-    date: '2026-05-22',
-    type: 'visit',
-    title: '就诊：外耳道炎',
-    description: '爱宠动物医院，王医生',
-  },
-  {
-    id: 'cal8',
-    date: '2026-01-10',
-    type: 'visit',
-    title: '就诊：年度体检',
-    description: '爱宠动物医院，李医生',
-  },
+  { id: 'cal1', petId: 'pet1', date: '2026-06-22', type: 'visit', title: '就诊：轻微肠胃炎', description: '爱宠动物医院，李医生' },
+  { id: 'cal2', petId: 'pet1', date: '2026-07-10', type: 'deworm', title: '体外驱虫', description: '福来恩体外驱虫' },
+  { id: 'cal3', petId: 'pet1', date: '2026-07-10', type: 'recheck', title: '耳道炎复查', description: '皮肤过敏情况复查，王医生' },
+  { id: 'cal4', petId: 'pet1', date: '2026-08-15', type: 'recheck', title: '肠胃炎复诊', description: '李医生复诊，确认恢复情况' },
+  { id: 'cal5', petId: 'pet1', date: '2026-09-01', type: 'deworm', title: '体内驱虫', description: '拜宠清体内驱虫' },
+  { id: 'cal6', petId: 'pet1', date: '2026-05-10', type: 'vaccine', title: '年度疫苗接种', description: '狂犬疫苗+六联疫苗' },
+  { id: 'cal7', petId: 'pet1', date: '2026-05-22', type: 'visit', title: '就诊：外耳道炎', description: '爱宠动物医院，王医生' },
+  { id: 'cal8', petId: 'pet1', date: '2026-01-10', type: 'visit', title: '就诊：年度体检', description: '爱宠动物医院，李医生' },
+  { id: 'cal9', petId: 'pet2', date: '2026-07-01', type: 'deworm', title: '体外驱虫', description: '大宠爱体外驱虫' },
+  { id: 'cal10', petId: 'pet2', date: '2026-08-15', type: 'deworm', title: '体内驱虫', description: '拜宠清体内驱虫' },
+  { id: 'cal11', petId: 'pet2', date: '2027-04-01', type: 'vaccine', title: '年度疫苗接种', description: '狂犬疫苗+猫三联疫苗' },
+  { id: 'cal12', petId: 'pet2', date: '2026-06-17', type: 'recheck', title: '呼吸道感染复诊', description: '张医生复诊，确认恢复情况' },
+  { id: 'cal13', petId: 'pet2', date: '2026-06-10', type: 'visit', title: '就诊：上呼吸道感染', description: '爱宠动物医院，张医生' },
 ];

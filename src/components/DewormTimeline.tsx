@@ -8,7 +8,8 @@ interface DewormTimelineProps {
 }
 
 export function DewormTimeline({ limit = 4, showAll = false }: DewormTimelineProps) {
-  const { deworms } = usePetStore();
+  const { currentDeworms } = usePetStore();
+  const deworms = currentDeworms();
 
   const sortedDeworms = [...deworms].sort(
     (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()

@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ChevronUp,
   Plus,
+  Settings,
 } from 'lucide-react';
 import { PetCard } from '../components/PetCard';
 import { FunctionGrid } from '../components/FunctionGrid';
@@ -16,13 +17,18 @@ import { VaccineList } from '../components/VaccineList';
 import { DewormTimeline } from '../components/DewormTimeline';
 import { ExamReportCard } from '../components/ExamReportCard';
 import { MedicalTimeline } from '../components/MedicalTimeline';
+import { PetSelector } from '../components/PetSelector';
+import { PetForm } from '../components/PetForm';
 import { Modal } from '../components/Modal';
 import { AddVaccineForm } from '../components/AddVaccineForm';
 import { AddDewormForm } from '../components/AddDewormForm';
 import { AddVisitForm } from '../components/AddVisitForm';
+import { usePetStore } from '../store/usePetStore';
+import type { Pet } from '../types';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { currentPet, updatePet, deletePet, resetAllData } = usePetStore();
   const [showAllVaccine, setShowAllVaccine] = useState(false);
   const [showAllDeworm, setShowAllDeworm] = useState(false);
   const [showAllVisit, setShowAllVisit] = useState(false);
@@ -30,6 +36,8 @@ export default function Home() {
   const [showVaccineModal, setShowVaccineModal] = useState(false);
   const [showDewormModal, setShowDewormModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
+  const [showPetModal, setShowPetModal] = useState(false);
+  const [editingPet, setEditingPet] = useState<Pet | undefined>(undefined);
 
   const vaccineRef = useRef<HTMLDivElement>(null);
   const dewormRef = useRef<HTMLDivElement>(null);
@@ -59,9 +67,45 @@ export default function Home() {
     e.stopPropagation();
   };
 
+  const handleAddPet = () => {
+    setEditingPet(undefined);
+    setShowPetModal(true);
+  };
+
+  const handleEditPet = (pet: Pet) => {
+    setEditingPet(pet);
+    setShowPetModal(true);
+  };
+
+  const handleDeletePet = (pet: Pet) => {
+    deletePet(pet.id);
+  };
+
+  const pet = currentPet();
+  const key = pet?.id || 'empty';
+
   return (
-    <div className="min-h-screen bg-surface-50 pb-24">
+    <div className="min-h-screen bg-surface-50 pb-24" key={key}>
       <div className="max-w-lg mx-auto px-4 py-4 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <PetSelector
+            onAddPet={handleAddPet}
+            onEditPet={handleEditPet}
+            onDeletePet={handleDeletePet}
+          />
+          <button
+            onClick={() => {
+              if (confirm('确定要重置所有数据吗？这将恢复为初始mock数据。')) {
+                resetAllData();
+              }
+            }}
+            className="w-10 h-10 rounded-2xl bg-white shadow-sm border border-surface-100 flex items-center justify-center hover:bg-surface-50 transition-colors"
+            title="重置数据"
+          >
+            <Settings className="w-4 h-4 text-surface-500" />
+          </button>
+        </div>
+
         <div className="animate-slide-up">
           <PetCard />
         </div>
@@ -231,6 +275,18 @@ export default function Home() {
       >
         <AddVisitForm
           onClose={() => setShowVisitModal(false)}
+          onSuccess={handleAddSuccess}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showPetModal}
+        onClose={() => setShowPetModal(false)}
+        title={editingPet ? '编辑宠物信息' : '添加新宠物'}
+      >
+        <PetForm
+          pet={editingPet}
+          onClose={() => setShowPetModal(false)}
           onSuccess={handleAddSuccess}
         />
       </Modal>

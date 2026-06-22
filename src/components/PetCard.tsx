@@ -3,7 +3,16 @@ import { Calendar, Scale, Heart } from 'lucide-react';
 import { formatDateCN } from '../utils/dateUtils';
 
 export function PetCard() {
-  const { pet } = usePetStore();
+  const { currentPet } = usePetStore();
+  const pet = currentPet();
+
+  if (!pet) {
+    return (
+      <div className="bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl p-5 text-white shadow-card h-40 flex items-center justify-center">
+        <p>请先添加宠物</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl p-5 text-white shadow-card">
