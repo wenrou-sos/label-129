@@ -53,6 +53,8 @@ export default function MedicalCalendar() {
         return 'bg-accent-500';
       case 'recheck':
         return 'bg-warning-500';
+      case 'visit':
+        return 'bg-purple-500';
       default:
         return 'bg-surface-400';
     }
@@ -65,6 +67,8 @@ export default function MedicalCalendar() {
       case 'deworm':
         return <Bug className="w-3 h-3" />;
       case 'recheck':
+        return <Stethoscope className="w-3 h-3" />;
+      case 'visit':
         return <Stethoscope className="w-3 h-3" />;
       default:
         return <Calendar className="w-3 h-3" />;
@@ -171,7 +175,7 @@ export default function MedicalCalendar() {
             })}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-surface-100 flex items-center justify-center gap-4">
+          <div className="mt-4 pt-3 border-t border-surface-100 flex items-center justify-center gap-4 flex-wrap">
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />
               <span className="text-xs text-surface-500">疫苗</span>
@@ -179,6 +183,10 @@ export default function MedicalCalendar() {
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-accent-500" />
               <span className="text-xs text-surface-500">驱虫</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+              <span className="text-xs text-surface-500">就诊</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-warning-500" />

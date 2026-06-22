@@ -36,6 +36,7 @@ interface PetState {
   getVisitRecordById: (id: string) => VisitRecord | undefined;
   getLatestExamReport: () => ExamReport | undefined;
   getPreviousExamReport: () => ExamReport | undefined;
+  resetAllData: () => void;
 }
 
 export const usePetStore = create<PetState>()(
@@ -106,23 +107,26 @@ export const usePetStore = create<PetState>()(
           id: generateId('visit'),
         };
 
-        let newEvents: CalendarEvent[] = [];
+        const newEvents: CalendarEvent[] = [];
 
-        if (record.treatmentAdvice) {
-          const lines = record.treatmentAdvice.split('\n');
-          lines.forEach((line) => {
-            if (line.includes('复诊') || line.includes('复查')) {
-              const today = new Date();
-              today.setDate(today.getDate() + 7);
-              const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-              newEvents.push({
-                id: generateId('event'),
-                date: dateStr,
-                type: 'recheck',
-                title: '复诊检查',
-                description: `${record.hospital}复诊，${record.doctor}医生`,
-              });
-            }
+        newEvents.push({
+          id: generateId('event'),
+          date: record.date,
+          type: 'visit',
+          title: `就诊：${record.diagnosis.slice(0, 10)}`,
+          description: `${record.hospital}，${record.doctor}医生`,
+        });
+
+        if (record.treatmentAdvice && (record.treatmentAdvice.includes('复诊') || record.treatmentAdvice.includes('复查'))) {
+          const visitDate = parseDateLocal(record.date);
+          visitDate.setDate(visitDate.getDate() + 7);
+          const recheckDateStr = `${visitDate.getFullYear()}-${String(visitDate.getMonth() + 1).padStart(2, '0')}-${String(visitDate.getDate()).padStart(2, '0')}`;
+          newEvents.push({
+            id: generateId('event'),
+            date: recheckDateStr,
+            type: 'recheck',
+            title: '复诊检查',
+            description: `${record.hospital}复诊，${record.doctor}医生`,
           });
         }
 
@@ -166,6 +170,17 @@ export const usePetStore = create<PetState>()(
         return [...reports].sort(
           (a, b) => parseDateLocal(b.date).getTime() - parseDateLocal(a.date).getTime()
         )[1];
+      },
+
+      resetAllData: () => {
+        set({
+          pet: mockPet,
+          vaccines: mockVaccines,
+          deworms: mockDeworms,
+          examReports: mockExamReports,
+          visitRecords: mockVisitRecords,
+          calendarEvents: mockCalendarEvents,
+        });
       },
     }),
     {

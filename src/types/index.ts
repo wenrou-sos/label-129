@@ -76,7 +76,7 @@ export interface VisitRecord {
 export interface CalendarEvent {
   id: string;
   date: string;
-  type: 'vaccine' | 'deworm' | 'recheck';
+  type: 'vaccine' | 'deworm' | 'recheck' | 'visit';
   title: string;
   description: string;
 }
