@@ -25,6 +25,7 @@ import { Modal } from '../components/Modal';
 import { AddVaccineForm } from '../components/AddVaccineForm';
 import { AddDewormForm } from '../components/AddDewormForm';
 import { AddVisitForm } from '../components/AddVisitForm';
+import { AddExamForm } from '../components/AddExamForm';
 import { SearchResultList } from '../components/SearchResultList';
 import { usePetStore } from '../store/usePetStore';
 import type { Pet } from '../types';
@@ -39,6 +40,7 @@ export default function Home() {
   const [showVaccineModal, setShowVaccineModal] = useState(false);
   const [showDewormModal, setShowDewormModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
+  const [showExamModal, setShowExamModal] = useState(false);
   const [showPetModal, setShowPetModal] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | undefined>(undefined);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -231,15 +233,24 @@ export default function Home() {
             icon={<FileText className="w-5 h-5" />}
             onClick={() => navigate('/compare')}
             extra={
-              <button
-                className="flex items-center text-primary-500 text-xs hover:text-primary-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/compare');
-                }}
-              >
-                对比分析 <ChevronRight className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2" onClick={stopPropagation}>
+                <button
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-warning-50 text-warning-600 text-xs font-medium hover:bg-warning-100 transition-colors"
+                  onClick={() => setShowExamModal(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  添加记录
+                </button>
+                <button
+                  className="flex items-center text-primary-500 text-xs hover:text-primary-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/compare');
+                  }}
+                >
+                  对比分析 <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             }
           >
             <ExamReportCard compact />
@@ -313,6 +324,17 @@ export default function Home() {
       >
         <AddVisitForm
           onClose={() => setShowVisitModal(false)}
+          onSuccess={handleAddSuccess}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showExamModal}
+        onClose={() => setShowExamModal(false)}
+        title="添加体检报告"
+      >
+        <AddExamForm
+          onClose={() => setShowExamModal(false)}
           onSuccess={handleAddSuccess}
         />
       </Modal>
